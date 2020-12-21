@@ -5,17 +5,15 @@ from selenium import webdriver
 from getpass import getpass
 from selenium.webdriver.common.keys import Keys
 import time
-from selenium.webdriver.support.ui import Select
-from datetime import date
 
 
-driver = webdriver.Chrome('/usr/bin/chromedriver')
 website = 'https://www.strava.com/upload/manual'
 filePath = str(sys.argv[1])
 email = input('Google E-Mail:  ') 
 password = getpass('Google Password:  ')
 
 #Login and Navigate to manual upload
+driver = webdriver.Chrome('C:\Program Files\Chromedriver.exe')
 driver.get(website)
 link = driver.find_element_by_link_text('Log in using Google')
 link.click()
@@ -36,11 +34,10 @@ with open(filePath, 'r') as csv_f:
     csv_dict = csv.DictReader(csv_f)
 
     for row in csv_dict:
-        #print('------------------------------')
         
         act_type = row['Type']
         dist = row['Distance (km)']
-        date = row['Date']
+        set_date = row['Date']
         duration = row['Duration']
 
         duration = duration.split(':')
@@ -57,12 +54,11 @@ with open(filePath, 'r') as csv_f:
             dur_min = duration[1] 
             dur_hour = duration[0]
             
-        date = date.split()
-        act_time = date[1]
+        set_date = set_date.split()
+        act_time = set_date[1]
 
-        date = date[0].split('-')
-        date_str = f"{date[1]}/{date[2]}/{date[0]}"
-        #print(f'type: {act_type},  distance: {dist},  date: {date},time:{act_time}  dur_hour: {dur_hour}, dur_min: {dur_min}, dur_sec: {dur_sec}')
+        set_date = set_date[0].split('-')
+        date_str = f"{set_date[1]}/{set_date[2]}/{set_date[0]}"
 
         dist_elem = driver.find_element_by_id('activity_distance')
         dist_elem.clear()
@@ -95,22 +91,12 @@ with open(filePath, 'r') as csv_f:
         
         type_elem.click()
 
-        
-        print(date_str)
         date_elem = driver.find_element_by_id('activity_start_date')
         date_elem.clear()
-        time.sleep(5)
-        for ch in date_str:
-            print(Keys.DIVIDE)
-            print(ch)
-            date_elem.send_keys(date_str)
-       # time.sleep(1)
-       # date_elem.send_keys("/")
-       # time.sleep(1)
-       # date_elem.send_keys(date[2])
-       # time.sleep(1)
-       # date_elem.send_keys("/")
-       # time.sleep(1)
-       # date_elem.send_keys(date[0])
-       # #date_elem.send_keys(Keys.RETURN) 
+        date_elem.send_keys(date_str)
+        
+        sub_elem = driver.find_element_by_xpath('//*[@id="new_activity"]/div[6]/div/input')
+        sub_elem.click()
+        time.sleep(1)
+        driver.get(website)
 #driver.close()    
